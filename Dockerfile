@@ -33,7 +33,8 @@ RUN export NG_CLI_ANALYTICS=ci ; yes | ng build --output-path=/var/www/html
 RUN chown -R nobody.nobody /var/www/html && \
   chown -R nobody.nobody /run && \
   chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/log/nginx
+  chown -R nobody.nobody /var/log/nginx && \
+  chown -R nobody.nobody /app 
 
 # Switch to use a non-root user from here on
 USER nobody
