@@ -444,10 +444,10 @@ buildah config --env PATH=/app/node_modules/.bin:$PATH $buildcntr2
 info "Start yarn"
 buildah run $buildcntr2 -- yarn install  --silent --non-interactive 
 buildah run $buildcntr2 -- yarn --silent --non-interactive global add @angular/cli   
-buildah run $buildcntr2 -- yarn cache clean --silent --non-interactive
 # buildah run $buildcntr2 -- ng build --output-path=/var/www/html 
 buildah run $buildcntr2 -- sh -c "(pwd && ng build --output-path=/var/www/html)"
 info "ng build completed"
+buildah run $buildcntr2 -- yarn cache clean --silent --non-interactive
 info "Remove default server definition"
 buildah run $buildcntr2 rm /etc/nginx/conf.d/default.conf
 buildah run $buildcntr2 rm /etc/nginx/nginx.conf
