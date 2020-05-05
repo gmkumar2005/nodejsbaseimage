@@ -446,7 +446,8 @@ buildah run $buildcntr2 -- yarn install  --silent --non-interactive
 buildah run $buildcntr2 -- yarn --silent --non-interactive global add @angular/cli   
 # buildah run $buildcntr2 -- ng build --output-path=/var/www/html 
 buildah run $buildcntr2 -- sh -c "(ng version)"
-buildah run $buildcntr2 -- sh -c "(pwd && ng build --output-path=/var/www/html)"
+# buildah run $buildcntr2 -- sh -c "(pwd && ng build --output-path=/var/www/html)"
+buildah copy $buildcntr2 src/index.html /var/www/html
 info "ng build completed"
 buildah run $buildcntr2 -- yarn cache clean --silent --non-interactive
 info "Remove default server definition"
@@ -464,7 +465,7 @@ buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /run"
 
 buildah config --cmd '/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' $buildcntr2 
 info "Setup non root user"
-buildah config --user nobody:nobody $buildcntr2 
+# buildah config --user nobody:nobody $buildcntr2 
 buildah config --port 8080 $buildcntr2 
 buildah config --workingdir /var/www/html  $buildcntr2
 
