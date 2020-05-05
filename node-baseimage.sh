@@ -429,10 +429,9 @@ if [[ "${arg_v:?}" = "1" ]]; then
   set -o verbose
 fi
 
-buildcntr2=$(buildah from ${arg_f})
+buildcntr2=$(buildah from --tls-verify=false ${arg_f})
 buildah config --label maintainer="Kiran Kumar <gmkumar2005@gmail.com>" $buildcntr2
 buildah config --user root $buildcntr2
-# buildah run $buildcntr2 apk --no-cache add  supervisor curl nginx 
 
 info "Configure supervisord"
 buildah copy $buildcntr2 supervisord.conf /etc/supervisor/conf.d/supervisord.conf

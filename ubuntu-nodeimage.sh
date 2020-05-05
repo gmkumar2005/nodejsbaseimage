@@ -429,7 +429,7 @@ if [[ "${arg_v:?}" = "1" ]]; then
   set -o verbose
 fi
 
-buildcntr2=$(buildah from ${arg_f})
+buildcntr2=$(buildah from --tls-verify=false ${arg_f})
 buildah config --label maintainer="Kiran Kumar <gmkumar2005@gmail.com>" $buildcntr2
 buildah run $buildcntr2 bash -c  "export DEBIAN_FRONTEND=noninteractive"
 buildah config --env DEBIAN_FRONTEND=noninteractive $buildcntr2 
