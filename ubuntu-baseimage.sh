@@ -147,7 +147,7 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
-  -f --from [arg]  from image. Default="node:10.20.1-alpine3.11"
+  -f --from [arg]  from image. Default="ubuntu:latest"
   -r --registry [arg] if not empty image will be pushed to this registry. eg: registry.container-registry:5000
   -v               Enable verbose mode, print script as it is executed
   -d --debug       Enables debug mode
@@ -417,79 +417,29 @@ info "__dir: ${__dir}"
 info "__base: ${__base}"
 info "OSTYPE: ${OSTYPE}"
 
-info "from : ${arg_f}"
-info "registry url : ${arg_r}"
-info "verbose :  ${arg_v}"
-info "debug   : ${arg_d}"
-info "color   : ${arg_n}"
+info "from : docker.io/library/ubuntu:latest"
+info "registry url  : ${arg_r}"
+info "verbose       : ${arg_v}"
+info "debug         : ${arg_d}"
+info "color         : ${arg_n}"
 
-info "starting buildah image processing.. "
+info "starting buildah image processing.. ${arg_r}ubuntu-baseimage:latest"
 # verbose mode
 if [[ "${arg_v:?}" = "1" ]]; then
   set -o verbose
 fi
 
-buildcntr2=$(buildah from node:10.20.1-alpine3.11)
+buildcntr2=$(buildah from ubuntu:latest)
 buildah config --label maintainer="Kiran Kumar <gmkumar2005@gmail.com>" $buildcntr2
-buildah config --user root $buildcntr2
-buildah run $buildcntr2 apk --no-cache add  supervisor curl nginx 
-
-info "Configure supervisord"
-buildah copy $buildcntr2 supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-buildah run $buildcntr2 mkdir /app
-buildah copy $buildcntr2 . /app
-buildah config --workingdir /app  $buildcntr2
-buildah config --env NG_CLI_ANALYTICS=ci $buildcntr2 
-buildah config --env PATH=/app/node_modules/.bin:$PATH $buildcntr2
-info "Start yarn"
-buildah run $buildcntr2 -- yarn install  --silent --non-interactive 
-buildah run $buildcntr2 -- yarn --silent --non-interactive global add @angular/cli   
-# buildah run $buildcntr2 -- ng build --output-path=/var/www/html 
-buildah run $buildcntr2 -- sh -c "(ng version)"
-# buildah run $buildcntr2 -- sh -c "(pwd && ng build --output-path=/var/www/html)"
-buildah copy $buildcntr2 src/index.html /var/www/html
-info "ng build completed"
-buildah run $buildcntr2 -- yarn cache clean --silent --non-interactive
-info "Remove default server definition"
-buildah run $buildcntr2 rm /etc/nginx/conf.d/default.conf
-buildah run $buildcntr2 rm /etc/nginx/nginx.conf
-
-info "Configure nginx"
-buildah copy $buildcntr2  nginx.conf /etc/nginx/nginx.conf
-
-buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /var/www/html" 
-buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /app" 
-buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /var/lib/nginx" 
-buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /var/log/nginx" 
-buildah run $buildcntr2 sh -c "chown -R nobody:nobody  /run" 
-
-buildah config --cmd '/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' $buildcntr2 
-info "Setup non root user"
-# buildah config --user nobody:nobody $buildcntr2 
-buildah config --port 8080 $buildcntr2 
-buildah config --workingdir /var/www/html  $buildcntr2
-
-if [ -z "$arg_r" ]
+if [ -z "${arg_r}" ]
   then
     info "Registry url not defined"
-    buildah commit --squash --rm --format docker $buildcntr2 node-basebuild:latest
+    buildah commit --squash --rm --format docker $buildcntr2 ubuntu-baseimage:latest
   else 
-  info "Commit image to $arg_r"
-  buildah commit --squash --rm --format docker $buildcntr2 $arg_r/node-basebuild:latest
-  info "Pushing image to $arg_r"
-  buildah push --tls-verify=false $arg_r/node-basebuild:latest
+  info "Commit image to ${arg_r}ubuntu-baseimage:latest"
+  buildah commit --squash --rm --format docker $buildcntr2 ${arg_r}ubuntu-baseimage:latest
+  info "Pushing image to ${arg_r}ubuntu-baseimage:latest"
+  buildah push --tls-verify=false ${arg_r}ubuntu-baseimage:latest
 fi
 
-info "End of buildah image processing.. "
-
-if [ -z "$arg_r" ]
-  then
-    info "Registry url not defined"
-    info "Usage : - podman run -p 8080:8080 -dt localhost:32000/node-basebuild -name node-basebuild"
-  else 
-  info "Usage : - podman run -p 8080:8080 -dt $arg_r/node-basebuild -name node-basebuild"
-fi
-
-
-
-
+info "End of buildah image processing ${arg_r}ubuntu-baseimage:latest"
