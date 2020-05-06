@@ -441,10 +441,10 @@ buildah config --workingdir /app  $buildcntr2
 buildah config --env NG_CLI_ANALYTICS=ci $buildcntr2 
 buildah config --env PATH=/app/node_modules/.bin:$PATH $buildcntr2
 info "Start yarn install"
-buildah run $buildcntr2 bash -c  "yarn install --silent --non-interactive"
+buildah run $buildcntr2 bash -c  "npm install"
 # buildah run $buildcntr2 -- ng build --output-path=/var/www/html 
 buildah run $buildcntr2 -- bash -c "(ng version)"
-buildah run $buildcntr2 -- bash -c "(pwd && ng build --prod --aot --buildOptimizer --commonChunk --vendorChunk --optimization --progress --output-path=/var/www/html)"
+buildah run $buildcntr2 -- bash -c "(pwd && ng build --prod --aot --buildOptimizer --commonChunk --vendorChunk --optimization --progress --verbose --output-path=/var/www/html)"
 # buildah copy $buildcntr2 src/index.html /var/www/html
 info "ng build completed"
 buildah run $buildcntr2 -- yarn cache clean  
