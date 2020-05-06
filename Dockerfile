@@ -23,17 +23,18 @@ RUN mkdir -p /var/www/html
 RUN mkdir -p /run/nginx
 
 COPY . /app
-RUN npm install
-RUN npm install -g @angular/cli
+RUN export NG_CLI_ANALYTICS=ci; yes | npm install  --silent @angular/cli
+RUN export NG_CLI_ANALYTICS=ci; yes | npm install  
 
 # buid dist 
-RUN ng build --output-path=/var/www/html
+RUN export NG_CLI_ANALYTICS=ci ; yes | ng build --output-path=/var/www/html
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
 RUN chown -R nobody.nobody /var/www/html && \
   chown -R nobody.nobody /run && \
   chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/log/nginx
+  chown -R nobody.nobody /var/log/nginx && \
+  chown -R nobody.nobody /app 
 
 # Switch to use a non-root user from here on
 USER nobody

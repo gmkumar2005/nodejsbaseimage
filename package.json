@@ -42,7 +42,7 @@
     "@coreui/icons": "0.3.0",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.9.2",
-    "core-js": "^2.6.11",
+    "core-js": "^3.6.5",
     "flag-icon-css": "^3.4.6",
     "font-awesome": "^4.7.0",
     "moment": "^2.24.0",
