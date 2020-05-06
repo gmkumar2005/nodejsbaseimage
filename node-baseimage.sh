@@ -444,7 +444,7 @@ info "Start yarn install"
 buildah run $buildcntr2 bash -c  "yarn install --silent --non-interactive"
 # buildah run $buildcntr2 -- ng build --output-path=/var/www/html 
 buildah run $buildcntr2 -- bash -c "(ng version)"
-buildah run $buildcntr2 -- bash -c "(pwd && ng build --verbose=true --output-path=/var/www/html)"
+buildah run $buildcntr2 -- bash -c "(pwd && ng build --prod --aot --buildOptimizer --commonChunk --vendorChunk --optimization --progress --output-path=/var/www/html)"
 # buildah copy $buildcntr2 src/index.html /var/www/html
 info "ng build completed"
 buildah run $buildcntr2 -- yarn cache clean  
