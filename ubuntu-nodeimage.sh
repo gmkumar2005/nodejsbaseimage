@@ -437,7 +437,7 @@ buildah run $buildcntr2 bash -c  "apt-get update -y && apt-get install -y --no-i
 # buildah run $buildcntr2 bash -c  "curl -sL https://deb.nodesource.com/setup_12.x | bash -"
 buildah run $buildcntr2 bash -c  "curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg |  apt-key add -"
 buildah run $buildcntr2 bash -c  "echo \"deb https://dl.yarnpkg.com/debian/ stable main\" | tee /etc/apt/sources.list.d/yarn.list"
-buildah run $buildcntr2 bash -c  "apt-get update -y && apt-get install -y --no-install-recommends  supervisor curl nginx yarn nodejs" 
+buildah run $buildcntr2 bash -c  "apt-get update -y && apt-get install -y --no-install-recommends  supervisor curl nginx yarn nodejs npm" 
 buildah run $buildcntr2 bash -c  "apt-get clean -y"
 buildah config --cmd '/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf' $buildcntr2 
  
